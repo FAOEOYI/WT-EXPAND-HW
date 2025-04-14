@@ -7,6 +7,8 @@ choice AUDIO_BOARD
         Select an audio board to use with the ESP-ADF
 config AUDIO_BOARD_CUSTOM
     bool "Custom audio board"
+config AUDIO_BOARD_AD35_S3
+    bool "Audio board AD35-S3"
 config ESP_LYRAT_V4_3_BOARD
     bool "ESP32-Lyrat V4.3"
 config ESP_LYRAT_V4_2_BOARD

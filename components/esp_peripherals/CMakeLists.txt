@@ -8,6 +8,7 @@ list(APPEND COMPONENT_ADD_INCLUDEDIRS ./include
                 ./lib/IS31FL3216
                 ./lib/aw2013
                 ./lib/tca9554
+                ./lib/aw9523b
                 ./driver/i2c_bus)
 
 list(APPEND COMPONENT_SRCS ./esp_peripherals.c
@@ -28,6 +29,7 @@ list(APPEND COMPONENT_SRCS ./esp_peripherals.c
                 ./lib/adc_button/adc_button.c
                 ./lib/IS31FL3216/IS31FL3216.c
                 ./lib/tca9554/tca9554.c
+                ./lib/aw9523b/aw9523b.c
                 ./lib/gpio_isr/gpio_isr.c)
 
 if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_LESS "5.3")
