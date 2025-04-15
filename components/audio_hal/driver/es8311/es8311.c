@@ -289,6 +289,26 @@ static void es8311_suspend(void)
 */
 esp_err_t es8311_pa_power(bool enable)
 {
+    #ifdef CONFIG_AUDIO_BOARD_AD35_S3
+    i2c_config_t i2c_config ;
+    get_i2c_pins(I2C_NUM_0, &i2c_config);
+
+    esp_aw9523b_config_t cfg = {
+        .i2c_sda = i2c_config.sda_io_num,
+        .i2c_scl = i2c_config.scl_io_num,
+        .interrupt_output = -1,
+    };
+
+    aw9523b_init(&cfg);
+
+    esp_err_t ret = ESP_OK;
+    if (enable) {
+        aw9523b_set_output_state(AW9523B_GPIO_PORT_1,AW9523B_GPIO_NUM_5,AW9523B_IO_HIGH);
+    } else {
+        aw9523b_set_output_state(AW9523B_GPIO_PORT_1,AW9523B_GPIO_NUM_5,AW9523B_IO_LOW);
+    }
+    return ret;
+    #else
     esp_err_t ret = ESP_OK;
     if (enable) {
         ret = gpio_set_level(get_pa_enable_gpio(), 1);
@@ -296,6 +316,7 @@ esp_err_t es8311_pa_power(bool enable)
         ret = gpio_set_level(get_pa_enable_gpio(), 0);
     }
     return ret;
+    #endif
 }
 
 esp_err_t es8311_codec_init(audio_hal_codec_config_t *codec_cfg)

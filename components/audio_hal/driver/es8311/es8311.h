@@ -28,6 +28,7 @@
 #include "audio_hal.h"
 #include "esp_types.h"
 #include "esxxx_common.h"
+#include "aw9523b.h"
 
 #ifdef __cplusplus
 extern "C" {
