@@ -80,6 +80,13 @@ typedef enum {
     AW9523B_MAX
 } aw9523b_gpio_num_t;//0-7,1-7保留，暂不使用
 
+typedef enum {
+    AW9523_37mA = 0x00,
+    AW9523_27P25mA,
+    AW9523_18P5mA,
+    AW9523_9P25mA,
+} aw9523_current_t;
+
 
 
 /**
@@ -184,6 +191,18 @@ void aw9523b_test(void);
  * @param level 要设置的电平状态，取值范围由 esp_aw9523b_io_level_t 枚举定义。
  */
 void aw9523b_set_pa(esp_aw9523b_io_level_t level);
+
+/**
+ * @brief 设置 AW9523 芯片 LED 的最大电流。
+ *
+ * 此函数通过 I2C 接口向 AW9523 芯片的特定寄存器写入指定的电流值，
+ * 从而设置 LED 的最大电流。
+ *
+ * @param current 要设置的 LED 最大电流值，类型为 aw9523_current_t。
+ */
+void aw9523_set_led_max_current(aw9523_current_t current);
+
+esp_err_t aw9523_led_set_duty(esp_aw9523b_gpio_port_t gpio_port , esp_aw9523b_gpio_num_t gpio_num,uint8_t duty);
 
 #ifdef __cplusplus
 }

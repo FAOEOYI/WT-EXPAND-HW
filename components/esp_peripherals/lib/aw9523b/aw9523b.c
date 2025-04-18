@@ -223,3 +223,90 @@ void aw9523b_set_pa(esp_aw9523b_io_level_t level)
     }
 }
 
+
+/**
+ * @brief 设置 AW9523 芯片 LED 的最大电流。
+ *
+ * 此函数通过 I2C 接口向 AW9523 芯片的特定寄存器写入指定的电流值，
+ * 从而设置 LED 的最大电流。
+ *
+ * @param current 要设置的 LED 最大电流值，类型为 aw9523_current_t。
+ */
+void aw9523_set_led_max_current(aw9523_current_t current) {
+    // 向 AW9523 设备的 0x11 寄存器写入电流值
+    aw9523b_write_reg(GLOBAL_CONTROL_REGISTER, current);
+}
+
+
+esp_err_t aw9523_led_set_duty(esp_aw9523b_gpio_port_t gpio_port , esp_aw9523b_gpio_num_t gpio_num,uint8_t duty) {
+    esp_err_t ret = ESP_OK;
+    if (gpio_num < AW9523B_GPIO_NUM_MAX) {
+        if(gpio_port == AW9523B_GPIO_PORT_0)
+        {
+            switch(gpio_num) {
+                case AW9523B_GPIO_NUM_0:
+                    aw9523b_write_reg(P0_0_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_1:
+                    aw9523b_write_reg(P0_1_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_2:
+                    aw9523b_write_reg(P0_2_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_3:
+                    aw9523b_write_reg(P0_3_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_4:
+                    aw9523b_write_reg(P0_4_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_5:
+                    aw9523b_write_reg(P0_5_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_6:
+                    aw9523b_write_reg(P0_6_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_7:
+                    aw9523b_write_reg(P0_7_LED_CURRENT_CONTROL, duty);
+                    break;
+                default:
+                    break;
+            }
+
+        }else if(gpio_port == AW9523B_GPIO_PORT_1){
+            switch(gpio_num) {
+                case AW9523B_GPIO_NUM_0:
+                    aw9523b_write_reg(P1_0_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_1:
+                    aw9523b_write_reg(P1_1_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_2:
+                    aw9523b_write_reg(P1_2_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_3:
+                    aw9523b_write_reg(P1_3_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_4:
+                    aw9523b_write_reg(P1_4_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_5:
+                    aw9523b_write_reg(P1_5_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_6:
+                    aw9523b_write_reg(P1_6_LED_CURRENT_CONTROL, duty);
+                    break;
+                case AW9523B_GPIO_NUM_7:
+                    aw9523b_write_reg(P1_7_LED_CURRENT_CONTROL, duty);
+                    break;
+                default:
+                    break;
+                }
+        }
+    }else{
+        ret = ESP_FAIL;
+        ESP_LOGE(TAG, "aw9523b led_set_duty fail");
+    }
+    return ret;
+    
+}
+

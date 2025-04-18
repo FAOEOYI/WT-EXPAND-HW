@@ -28,11 +28,15 @@
 #include "periph_sdcard.h"
 #include "periph_adc_button.h"
 #include "tca9554.h"
+#include "aw9523b.h"
+#include "esp_err.h"
 
 
 static const char *TAG = "AUDIO_BOARD";
 
 static audio_board_handle_t board_handle = 0;
+
+#define DMA_BURST_SIZE 64 //16,32,64。当DMA缓冲区来自PSRAM时，更高的突发大小可以提高性能
 
 audio_board_handle_t audio_board_init(void)
 {
@@ -68,76 +72,165 @@ audio_hal_handle_t audio_board_codec_init(void)
 esp_err_t _lcd_rest(esp_periph_handle_t self, void *ctx)
 {
     // Reset the LCD
-    tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_LOW);
+    // tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_LOW);
+    // vTaskDelay(100 / portTICK_PERIOD_MS);
+    // tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_HIGH);
+    // vTaskDelay(200 / portTICK_PERIOD_MS);
+    i2c_config_t i2c_config ;
+    get_i2c_pins(I2C_NUM_0, &i2c_config);
+
+    esp_aw9523b_config_t cfg = {
+        .i2c_sda = i2c_config.sda_io_num,
+        .i2c_scl = i2c_config.scl_io_num,
+        .interrupt_output = -1,
+    };
+
+    aw9523b_init(&cfg);
+    
+    aw9523b_set_output_state(AW9523B_GPIO_PORT_1,LCD_RST_GPIO,AW9523B_IO_LOW);
     vTaskDelay(100 / portTICK_PERIOD_MS);
-    tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_HIGH);
+    aw9523b_set_output_state(AW9523B_GPIO_PORT_1,LCD_RST_GPIO,AW9523B_IO_HIGH);
     vTaskDelay(200 / portTICK_PERIOD_MS);
     return ESP_OK;
 }
 
-esp_err_t _get_lcd_io_bus (void *bus, esp_lcd_panel_io_spi_config_t *io_config,
-                           esp_lcd_panel_io_handle_t *out_panel_io)
-{
-    return esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)bus, io_config, out_panel_io);
-}
+
 
 display_service_handle_t audio_board_led_init(void)
 {
     return NULL;
 }
 
+// 修改为I80接口的获取函数
+esp_err_t _get_lcd_io_bus(void *bus, esp_lcd_panel_io_i80_config_t *io_config,esp_lcd_panel_io_handle_t *out_panel_io)
+{
+    return esp_lcd_new_panel_io_i80((esp_lcd_i80_bus_handle_t)bus, io_config, out_panel_io);
+}
+
+static SemaphoreHandle_t refresh_finish = NULL;
+
+IRAM_ATTR static bool notify_refresh_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+{
+    BaseType_t need_yield = pdFALSE;
+
+    xSemaphoreGiveFromISR(refresh_finish, &need_yield);
+    return (need_yield == pdTRUE);
+}
+
 void *audio_board_lcd_init(esp_periph_set_handle_t set, void *cb)
 {
-    esp_tca9554_config_t pca_cfg = {
-        .i2c_scl = GPIO_NUM_18,
-        .i2c_sda = GPIO_NUM_17,
+    // 初始化io拓展器部分
+    // 对复位引脚进行操作
+    i2c_config_t i2c_config;
+    get_i2c_pins(I2C_NUM_0, &i2c_config);
+
+    esp_aw9523b_config_t cfg_iic = {
+        .i2c_sda = i2c_config.sda_io_num,
+        .i2c_scl = i2c_config.scl_io_num,
         .interrupt_output = -1,
     };
-    tca9554_init(&pca_cfg);
-    // Set LCD_BL_CTRL output
-    tca9554_set_io_config(LCD_CTRL_GPIO, TCA9554_IO_OUTPUT);
-    // Set LCD_RST output
-    tca9554_set_io_config(LCD_RST_GPIO, TCA9554_IO_OUTPUT);
-    // Set LCD_CS pin output
-    tca9554_set_io_config(LCD_CS_GPIO, TCA9554_IO_OUTPUT);
 
-    tca9554_set_output_state(LCD_CTRL_GPIO, TCA9554_IO_HIGH);
-    tca9554_set_output_state(LCD_CS_GPIO, TCA9554_IO_HIGH);
-    vTaskDelay(10 / portTICK_PERIOD_MS);
-    tca9554_set_output_state(LCD_CS_GPIO, TCA9554_IO_LOW);
-    vTaskDelay(10 / portTICK_PERIOD_MS);
+    aw9523b_init(&cfg_iic);
+    
+    // aw9523b_set_output_state(AW9523B_GPIO_PORT_1,LCD_RST_GPIO,AW9523B_IO_LOW);
+    // vTaskDelay(100 / portTICK_PERIOD_MS);
+    // aw9523b_set_output_state(AW9523B_GPIO_PORT_1,LCD_RST_GPIO,AW9523B_IO_HIGH);
+    // vTaskDelay(200 / portTICK_PERIOD_MS);
 
-    spi_bus_config_t buscfg = {
-        .sclk_io_num = LCD_CLK_GPIO,
-        .mosi_io_num = LCD_MOSI_GPIO,
-        .miso_io_num = -1,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = LCD_V_RES * LCD_H_RES * 2
+    aw9523_set_led_max_current(AW9523_37mA);
+    aw9523b_set_pin_mode(AW9523B_GPIO_PORT_1, AW9523B_GPIO_NUM_0, AW9523B_PIN_LED_MODE);
+    aw9523b_set_pin_mode(AW9523B_GPIO_PORT_1, AW9523B_GPIO_NUM_1, AW9523B_PIN_LED_MODE);
+    aw9523b_set_pin_mode(AW9523B_GPIO_PORT_1, AW9523B_GPIO_NUM_2, AW9523B_PIN_LED_MODE);
+    aw9523b_set_pin_mode(AW9523B_GPIO_PORT_1, AW9523B_GPIO_NUM_3, AW9523B_PIN_LED_MODE);
+    aw9523_led_set_duty(AW9523B_GPIO_PORT_1 , AW9523B_GPIO_NUM_0,128);
+    aw9523_led_set_duty(AW9523B_GPIO_PORT_1 , AW9523B_GPIO_NUM_1,128);
+    aw9523_led_set_duty(AW9523B_GPIO_PORT_1 , AW9523B_GPIO_NUM_2,128);
+    aw9523_led_set_duty(AW9523B_GPIO_PORT_1 , AW9523B_GPIO_NUM_3,128);
+
+
+    
+    // 初始化I80总线
+    esp_lcd_i80_bus_handle_t i80_bus = NULL;
+    esp_lcd_panel_io_handle_t io_handle = NULL;
+    void *user_ctx = NULL;
+    // 定义LCD总线配置
+    esp_lcd_i80_bus_config_t bus_config = {
+        .clk_src = LCD_CLK_SRC_PLL160M,
+        .dc_gpio_num = LCD_I80_1_RS, // 数据/命令选择引脚
+        .wr_gpio_num = LCD_1_WR_CLK_GPIO, // 写使能引脚
+        .data_gpio_nums = {
+            PIN_NUM_LCD_DATA0,
+            PIN_NUM_LCD_DATA1,
+            PIN_NUM_LCD_DATA2,
+            PIN_NUM_LCD_DATA3,
+            PIN_NUM_LCD_DATA4,
+            PIN_NUM_LCD_DATA5,
+            PIN_NUM_LCD_DATA6,
+            PIN_NUM_LCD_DATA7, 
+            PIN_NUM_LCD_DATA8, 
+            PIN_NUM_LCD_DATA9, 
+            PIN_NUM_LCD_DATA10, 
+            PIN_NUM_LCD_DATA11,
+            PIN_NUM_LCD_DATA12, 
+            PIN_NUM_LCD_DATA13, 
+            PIN_NUM_LCD_DATA14, 
+            PIN_NUM_LCD_DATA15
+        },
+        .bus_width = LCD_DATA_WIDTH,
+        .max_transfer_bytes = LCD_H_RES * LCD_V_RES * LCD_BIT_PER_PIXEL / 8,
+        .dma_burst_size = DMA_BURST_SIZE,
+        .psram_trans_align = 64,            
+        .sram_trans_align = 4,  
     };
-    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
+    ESP_ERROR_CHECK(esp_lcd_new_i80_bus(&bus_config, &i80_bus));
 
-    esp_lcd_panel_io_spi_config_t io_config = {
-        .dc_gpio_num = LCD_DC_GPIO,
+    esp_lcd_panel_io_i80_config_t io_config = {
         .cs_gpio_num = -1,
-        .pclk_hz = 60 * 1000 * 1000,
+        .pclk_hz = 10 * 1000 * 1000,
+        .trans_queue_depth = 10,
+        .dc_levels = {
+            .dc_idle_level = 0,
+            .dc_cmd_level = 0,
+            .dc_dummy_level = 0,
+            .dc_data_level = 1,
+        },
+        .flags = {
+            .swap_color_bytes = 0, // Swap can be done in LvGL (default) or DMA
+            .reverse_color_bits = 0, // Reverse can be done in LvGL (default) or DMA
+        },
+        .on_color_trans_done = NULL,  // 使用传入的回调函数
+        .user_ctx = NULL,
         .lcd_cmd_bits = 8,
         .lcd_param_bits = 8,
-        .spi_mode = 0,
-        .trans_queue_depth = 10,
-        .on_color_trans_done = cb,
-        .user_ctx = NULL,
     };
+    
+    // 直接初始化面板IO，不通过periph_lcd组件
+    // ESP_ERROR_CHECK(esp_lcd_new_panel_io_i80(i80_bus, &io_config, &io_handle));
+
+    esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
-        .reset_gpio_num = -1,
+        .reset_gpio_num = PIN_NUM_LCD_RST,
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
         .color_space = ESP_LCD_COLOR_SPACE_BGR,
-        .bits_per_pixel = 16,
+#else
+        .rgb_endian = LCD_RGB_ENDIAN_BGR,
+#endif
+        .bits_per_pixel = LCD_BIT_PER_PIXEL,
     };
+    
+    // 直接初始化ST7796面板
+    // ESP_ERROR_CHECK(esp_lcd_new_panel_st7796(io_handle, &panel_config, &panel_handle));
+    // ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
+    // ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    // ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+    // return (void *)panel_handle;
+    // 如果仍然需要使用periph_lcd组件，则使用以下代码
+    
     periph_lcd_cfg_t cfg = {
-        .io_bus = (void *)SPI2_HOST,
+        .io_bus = (void *)i80_bus,
         .new_panel_io = _get_lcd_io_bus,
         .lcd_io_cfg = &io_config,
-        .new_lcd_panel = esp_lcd_new_panel_st7789,
+        .new_lcd_panel = esp_lcd_new_panel_st7796,
         .lcd_dev_cfg = &panel_config,
         .rest_cb = _lcd_rest,
         .rest_cb_ctx = NULL,
@@ -150,6 +243,9 @@ void *audio_board_lcd_init(esp_periph_set_handle_t set, void *cb)
     AUDIO_NULL_CHECK(TAG, periph_lcd, return NULL);
     esp_periph_start(set, periph_lcd);
     return (void *)periph_lcd_get_panel_handle(periph_lcd);
+    
+    
+    
 }
 
 esp_err_t audio_board_key_init(esp_periph_set_handle_t set)

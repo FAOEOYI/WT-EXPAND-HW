@@ -32,6 +32,11 @@
 #include "display_service.h"
 #include "periph_sdcard.h"
 #include "periph_lcd.h"
+#include "esp_lcd_st7796.h"
+#include "esp_err.h"
+#include "esp_check.h"
+#include "esp_lcd_panel_ops.h"
+#include "aw9523b.h"
 
 #ifdef __cplusplus
 extern "C" {

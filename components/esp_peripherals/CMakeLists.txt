@@ -10,6 +10,7 @@ list(APPEND COMPONENT_ADD_INCLUDEDIRS ./include
                 ./lib/tca9554
                 ./lib/aw9523b
                 ./lib/mk2016
+                ./lib/espressif__esp_lcd_st7796
                 ./driver/i2c_bus)
 
 list(APPEND COMPONENT_SRCS ./esp_peripherals.c
@@ -32,6 +33,9 @@ list(APPEND COMPONENT_SRCS ./esp_peripherals.c
                 ./lib/tca9554/tca9554.c
                 ./lib/aw9523b/aw9523b.c
                 ./lib/mk2016/mkpb2016.c
+                ./lib/espressif__esp_lcd_st7796/esp_lcd_st7796_general.c
+                ./lib/espressif__esp_lcd_st7796/esp_lcd_st7796_mipi.c
+                ./lib/espressif__esp_lcd_st7796/esp_lcd_st7796.c
                 ./lib/gpio_isr/gpio_isr.c)
 
 if("${IDF_VERSION_MAJOR}.${IDF_VERSION_MINOR}" VERSION_LESS "5.3")
@@ -72,9 +76,9 @@ list(APPEND COMPONENT_REQUIRES esp_lcd)
 ENDIF()
 
 if (idf_version VERSION_GREATER_EQUAL "5.0")
-list(APPEND COMPONENT_PRIV_REQUIRES esp_adc)
+list(APPEND COMPONENT_PRIV_REQUIRES esp_adc esp_lcd)
 else()
-list(APPEND COMPONENT_PRIV_REQUIRES esp_adc_cal)
+list(APPEND COMPONENT_PRIV_REQUIRES esp_adc_cal esp_lcd)
 endif()
 
 register_component()
