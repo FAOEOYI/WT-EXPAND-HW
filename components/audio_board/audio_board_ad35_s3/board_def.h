@@ -85,6 +85,8 @@
  #define PIN_NUM_LCD_WR              LCD_1_WR_CLK_GPIO
  
  #define DELAY_TIME_MS (3000)
+
+ #define TP_I2C_INT_PIN              GPIO_NUM_6
  
  /**
   * @brief SDCARD Function Definition
