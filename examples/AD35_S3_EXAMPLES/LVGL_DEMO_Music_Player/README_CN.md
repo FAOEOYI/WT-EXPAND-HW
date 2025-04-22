@@ -5,9 +5,9 @@
 
 本例程使用 LVGL 图形库绘制了一个音乐播放器的界面，支持触摸屏控制。本例程参考 LVGL 原始 lv_demo_music 工程。
 
-![image-20250422173851506](.\PNG\image-20250422173851506.png)
+![image-20250422173851506](https://github.com/FAOEOYI/WT-EXPAND-HW/blob/main/examples/AD35_S3_EXAMPLES/LVGL_DEMO_Music_Player/PNG/image-20250422173851506.png?raw=true)
 
-![image-20250422173907197](.\PNG\image-20250422173907197.png)
+![image-20250422173907197](https://github.com/FAOEOYI/WT-EXPAND-HW/blob/main/examples/AD35_S3_EXAMPLES/LVGL_DEMO_Music_Player/PNG/image-20250422173907197.png?raw=true)
 
 ## 环境配置
 
