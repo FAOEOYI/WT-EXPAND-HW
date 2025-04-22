@@ -38,20 +38,20 @@
   * @brief LCD SCREEN Function Definition
   */
  #define FUNC_LCD_SCREEN_EN          (1)
+
+  // LCD SPI Pins
  #define LCD_CTRL_GPIO               -1
- 
  #define LCD_CS_GPIO                 -1
- // LCD SPI Pins
  #define LCD_DC_GPIO                 -1
- 
  #define LCD_MOSI_GPIO               -1
- // The LCD pixel number in horizontal and vertical
- 
+
+// 设置LCD XY轴方向是否交换、是否水平翻转、是否垂直翻转、颜色是否反转
  #define LCD_SWAP_XY                 (false)
- #define LCD_MIRROR_X                (false)
+ #define LCD_MIRROR_X                (true)
  #define LCD_MIRROR_Y                (false)
  #define LCD_COLOR_INV               (true)
  
+ // LCD I80 Pins
  #define PIN_NUM_LCD_CS              (-1)
  #define PIN_NUM_LCD_DATA0           (GPIO_NUM_9)
  #define PIN_NUM_LCD_DATA1           (GPIO_NUM_3)
@@ -71,22 +71,22 @@
  #define PIN_NUM_LCD_DATA15          (-1)
  #define PIN_NUM_LCD_RST             (GPIO_NUM_NC)
  
- #define LCD_I80_1_RS               GPIO_NUM_45 //LCD1_RS引脚是用于选择LCD模块的操作模式的引脚
- #define LCD_RST_GPIO               AW9523B_GPIO_NUM_6 // AW9523b 1_6
- #define LCD_1_WR_CLK_GPIO          GPIO_NUM_10
+ #define LCD_I80_1_RS                GPIO_NUM_45    //LCD1_RS引脚是用于选择LCD模块的操作模式的引脚
+ #define LCD_RST_GPIO                AW9523B_GPIO_NUM_6 // AW9523b 1_6 复位引脚
+ #define LCD_1_WR_CLK_GPIO           GPIO_NUM_10 // LCD1_WR_CLK引脚是用于控制LCD模块的写入时钟的引脚
+  // 水平和垂直的LCD像素数
+ #define LCD_H_RES                   320 // 水平分辨率
+ #define LCD_V_RES                   480 // 垂直分辨率
  
- #define LCD_H_RES                   320
- #define LCD_V_RES                   480
+ #define LCD_BIT_PER_PIXEL           (16)
+ #define LCD_DATA_WIDTH              (8)
  
- #define LCD_BIT_PER_PIXEL (16)
- #define LCD_DATA_WIDTH (8)
+ #define PIN_NUM_LCD_DC              LCD_I80_1_RS       // LCD1_RS引脚是用于选择LCD模块的操作模式的引脚
+ #define PIN_NUM_LCD_WR              LCD_1_WR_CLK_GPIO  // LCD1_WR_CLK引脚是用于控制LCD模块的写入时钟的引脚
  
- #define PIN_NUM_LCD_DC              LCD_I80_1_RS
- #define PIN_NUM_LCD_WR              LCD_1_WR_CLK_GPIO
- 
- #define DELAY_TIME_MS (3000)
+ #define DELAY_TIME_MS               (3000)
 
- #define TP_I2C_INT_PIN              GPIO_NUM_6
+ #define TP_I2C_INT_PIN              GPIO_NUM_6 // TP_INT引脚是用于中断的引脚
  
  /**
   * @brief SDCARD Function Definition
@@ -96,9 +96,9 @@
  #define SDCARD_INTR_GPIO            -1
  #define SDCARD_PWR_CTRL             -1
  
- #define ESP_SD_PIN_CLK              GPIO_NUM_15
- #define ESP_SD_PIN_CMD              GPIO_NUM_7
- #define ESP_SD_PIN_D0               GPIO_NUM_4
+ #define ESP_SD_PIN_CLK              -1
+ #define ESP_SD_PIN_CMD              -1
+ #define ESP_SD_PIN_D0               -1
  #define ESP_SD_PIN_D1               -1
  #define ESP_SD_PIN_D2               -1
  #define ESP_SD_PIN_D3               -1
@@ -116,21 +116,21 @@
  #define FUNC_CAMERA_EN              (1)
  #define CAM_PIN_PWDN                -1
  #define CAM_PIN_RESET               -1
- #define CAM_PIN_XCLK                GPIO_NUM_40
- #define CAM_PIN_SIOD                GPIO_NUM_17
- #define CAM_PIN_SIOC                GPIO_NUM_18
+ #define CAM_PIN_XCLK                -1
+ #define CAM_PIN_SIOD                -1
+ #define CAM_PIN_SIOC                -1
  
- #define CAM_PIN_D7                  GPIO_NUM_39
- #define CAM_PIN_D6                  GPIO_NUM_41
- #define CAM_PIN_D5                  GPIO_NUM_42
- #define CAM_PIN_D4                  GPIO_NUM_12
- #define CAM_PIN_D3                  GPIO_NUM_3
- #define CAM_PIN_D2                  GPIO_NUM_14
- #define CAM_PIN_D1                  GPIO_NUM_47
- #define CAM_PIN_D0                  GPIO_NUM_13
- #define CAM_PIN_VSYNC               GPIO_NUM_21
- #define CAM_PIN_HREF                GPIO_NUM_38
- #define CAM_PIN_PCLK                GPIO_NUM_11
+ #define CAM_PIN_D7                  -1
+ #define CAM_PIN_D6                  -1
+ #define CAM_PIN_D5                  -1
+ #define CAM_PIN_D4                  -1
+ #define CAM_PIN_D3                  -1
+ #define CAM_PIN_D2                  -1
+ #define CAM_PIN_D1                  -1
+ #define CAM_PIN_D0                  -1
+ #define CAM_PIN_VSYNC               -1
+ #define CAM_PIN_HREF                -1
+ #define CAM_PIN_PCLK                -1
  
  
  /**

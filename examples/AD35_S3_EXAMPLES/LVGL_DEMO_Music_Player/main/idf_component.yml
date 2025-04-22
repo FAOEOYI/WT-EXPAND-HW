@@ -1,0 +1,3 @@
+dependencies:
+  lvgl/lvgl: ==8.0.2
+  

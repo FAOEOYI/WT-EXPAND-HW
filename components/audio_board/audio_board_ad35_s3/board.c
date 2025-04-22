@@ -198,7 +198,7 @@ void *audio_board_lcd_init(esp_periph_set_handle_t set, void *cb)
             .swap_color_bytes = 0, // Swap can be done in LvGL (default) or DMA
             .reverse_color_bits = 0, // Reverse can be done in LvGL (default) or DMA
         },
-        .on_color_trans_done = NULL,  // 使用传入的回调函数
+        .on_color_trans_done = cb,  // 使用传入的回调函数
         .user_ctx = NULL,
         .lcd_cmd_bits = 8,
         .lcd_param_bits = 8,
