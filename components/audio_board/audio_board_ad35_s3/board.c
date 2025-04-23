@@ -72,10 +72,6 @@ audio_hal_handle_t audio_board_codec_init(void)
 esp_err_t _lcd_rest(esp_periph_handle_t self, void *ctx)
 {
     // Reset the LCD
-    // tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_LOW);
-    // vTaskDelay(100 / portTICK_PERIOD_MS);
-    // tca9554_set_output_state(LCD_RST_GPIO, TCA9554_IO_HIGH);
-    // vTaskDelay(200 / portTICK_PERIOD_MS);
     i2c_config_t i2c_config ;
     get_i2c_pins(I2C_NUM_0, &i2c_config);
 
@@ -246,6 +242,11 @@ void *audio_board_lcd_init(esp_periph_set_handle_t set, void *cb)
     
     
     
+}
+
+esp_err_t audio_board_back_PWM_init(void)
+{
+    return ESP_OK;
 }
 
 esp_err_t audio_board_key_init(esp_periph_set_handle_t set)

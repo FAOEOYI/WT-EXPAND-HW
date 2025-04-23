@@ -35,12 +35,14 @@ static const char *TAG = "ESP32_S3_KORVO_2";
 esp_err_t get_i2c_pins(i2c_port_t port, i2c_config_t *i2c_config)
 {
     AUDIO_NULL_CHECK(TAG, i2c_config, return ESP_FAIL);
-    if (port == I2C_NUM_0 || port == I2C_NUM_1) {
+    if (port == I2C_NUM_0) {
         i2c_config->sda_io_num = GPIO_NUM_5;
         i2c_config->scl_io_num = GPIO_NUM_4;
-    } else {
-        i2c_config->sda_io_num = -1;
-        i2c_config->scl_io_num = -1;
+    } else if(port == I2C_NUM_1){
+        i2c_config->sda_io_num = GPIO_NUM_48;
+        i2c_config->scl_io_num = GPIO_NUM_38;
+    }else{
+        memset(i2c_config, 0, sizeof(i2c_config_t));
         ESP_LOGE(TAG, "i2c port %d is not supported", port);
         return ESP_FAIL;
     }
@@ -76,15 +78,15 @@ esp_err_t get_spi_pins(spi_bus_config_t *spi_config, spi_device_interface_config
     AUDIO_NULL_CHECK(TAG, spi_config, return ESP_FAIL);
     AUDIO_NULL_CHECK(TAG, spi_device_interface_config, return ESP_FAIL);
 
-    spi_config->mosi_io_num = -1;
-    spi_config->miso_io_num = -1;
-    spi_config->sclk_io_num = -1;
+    spi_config->mosi_io_num = GPIO_NUM_39;
+    spi_config->miso_io_num = GPIO_NUM_40;
+    spi_config->sclk_io_num = GPIO_NUM_41;
     spi_config->quadwp_io_num = -1;
     spi_config->quadhd_io_num = -1;
 
     spi_device_interface_config->spics_io_num = -1;
 
-    ESP_LOGW(TAG, "SPI interface is not supported");
+    // ESP_LOGW(TAG, "SPI interface is not supported");
     return ESP_OK;
 }
 

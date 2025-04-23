@@ -87,7 +87,24 @@
  #define DELAY_TIME_MS               (3000)
 
  #define TP_I2C_INT_PIN              GPIO_NUM_6 // TP_INT引脚是用于中断的引脚
- 
+
+
+ /**
+  * @brief BACK IO FUNCTION Definition
+  */
+ #define FUNC_BACK_IO_EN             (1)
+ #define BACK_AN                     GPIO_NUM_1
+ #define BACK_RST                    GPIO_NUM_2
+ #define BACK_SPI_CS                 GPIO_NUM_42
+ #define BACK_SPI_MOSI               GPIO_NUM_39
+ #define BACK_SPI_MISO               GPIO_NUM_40
+ #define BACK_SPI_SCLK               GPIO_NUM_41
+ #define BACK_PWM                    GPIO_NUM_46
+ #define BACK_INT                    GPIO_NUM_11
+ #define BACK_UART_TX                GPIO_NUM_19
+ #define BACK_UART_RX                GPIO_NUM_20
+ #define BACK_I2C_SCL                GPIO_NUM_38
+ #define BACK_I2C_SDA                GPIO_NUM_48
  /**
   * @brief SDCARD Function Definition
   */
