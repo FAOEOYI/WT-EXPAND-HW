@@ -155,7 +155,7 @@
   */
  #define FUNC_LCD_TOUCH_EN          (1)
  #define TOUCH_PANEL_SWAP_XY        (0)
- #define TOUCH_PANEL_INVERSE_X      (1)
+ #define TOUCH_PANEL_INVERSE_X      (0)
  #define TOUCH_PANEL_INVERSE_Y      (0)
  
  /**
