@@ -244,9 +244,25 @@ void *audio_board_lcd_init(esp_periph_set_handle_t set, void *cb)
     
 }
 
-esp_err_t audio_board_back_PWM_init(void)
+esp_err_t audio_board_back_SPI_init(spi_device_handle_t *handle)
 {
-    return ESP_OK;
+    esp_err_t ret;
+    // 初始化SPI总线
+    spi_bus_config_t bus_config;
+    memset(&bus_config, 0, sizeof(bus_config));
+     // 添加SPI设备
+    spi_device_interface_config_t dev_config;
+    memset(&dev_config, 0, sizeof(dev_config));
+    get_spi_pins(&bus_config,&dev_config);
+    /*
+        spi_bus_add_device函数将SPI设备添加到HSPI总线
+        第一个参数是SPI主机的ID，这里使用的是 SPI2_HOST
+        第二个参数是一个指向spi_device_interface_config_t结构体的指针，该结构体包含了SPI设备的配置信息
+        第三个参数是一个指向SPI设备句柄的指针，该句柄在函数返回时会被设置为新添加的设备的句柄
+    */
+    ret = spi_bus_add_device(SPI2_HOST, &dev_config, handle);
+    ESP_LOGI(TAG, "SPI bus add device: %s", esp_err_to_name(ret));
+    return ret;
 }
 
 esp_err_t audio_board_key_init(esp_periph_set_handle_t set)

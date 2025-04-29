@@ -78,15 +78,35 @@ esp_err_t get_spi_pins(spi_bus_config_t *spi_config, spi_device_interface_config
     AUDIO_NULL_CHECK(TAG, spi_config, return ESP_FAIL);
     AUDIO_NULL_CHECK(TAG, spi_device_interface_config, return ESP_FAIL);
 
-    spi_config->mosi_io_num = GPIO_NUM_39;
-    spi_config->miso_io_num = GPIO_NUM_40;
-    spi_config->sclk_io_num = GPIO_NUM_41;
-    spi_config->quadwp_io_num = -1;
-    spi_config->quadhd_io_num = -1;
+    // SPI 引脚初始化
+    gpio_config_t io_conf = {
+        .pin_bit_mask   = (1ULL << GPIO_NUM_39) | (1ULL << GPIO_NUM_40) | (1ULL << GPIO_NUM_41) | (1ULL << GPIO_NUM_42),
+        .mode           = GPIO_MODE_OUTPUT, // 设置为输出模式
+        .pull_up_en     = GPIO_PULLUP_ENABLE, // 启用上拉电阻
+        .pull_down_en   = GPIO_PULLDOWN_DISABLE,
+        .intr_type      = GPIO_INTR_DISABLE
+    };
+    gpio_config(&io_conf);
 
-    spi_device_interface_config->spics_io_num = -1;
+    // 配置SPI总线
+    spi_config->mosi_io_num = GPIO_NUM_39;  // MISO引脚的GPIO编号
+    spi_config->miso_io_num = GPIO_NUM_40;  // MOSI引脚的GPIO编号
+    spi_config->sclk_io_num = GPIO_NUM_41;  // SCLK引脚的GPIO编号
+    spi_config->quadwp_io_num = -1;         // QUADWP引脚的GPIO编号，-1表示不使用
+    spi_config->quadhd_io_num = -1;         // QUADHD引脚的GPIO编号，-1表示不使用
+    spi_config->max_transfer_sz = 32;       // 最大传输大小，单位为字节，这里设置为32字节
 
-    // ESP_LOGW(TAG, "SPI interface is not supported");
+    esp_err_t ret = spi_bus_initialize(SPI2_HOST, spi_config, SPI_DMA_CH_AUTO);
+    ESP_LOGI(TAG, "SPI bus initialize: %s", esp_err_to_name(ret));
+
+     // 配置SPI设备
+    spi_device_interface_config->clock_speed_hz = 1000000; // SPI时钟速度，单位为Hz,这里设置为1MHz
+    spi_device_interface_config->mode = 0;                  // SPI模式，0表示模式0
+    spi_device_interface_config->queue_size = 7;            // 事务队列的大小，这里设置为7
+    spi_device_interface_config->spics_io_num = GPIO_NUM_42;// CS引脚的GPIO编号
+    spi_device_interface_config->flags = 0;                // 事务的标志，0表示没有特殊标志
+    spi_device_interface_config->clock_source = SPI_CLK_SRC_DEFAULT; // SPI时钟源，默认值为SPI_CLK_SRC_DEFAULT
+    
     return ESP_OK;
 }
 

@@ -37,6 +37,9 @@
 #include "esp_check.h"
 #include "esp_lcd_panel_ops.h"
 #include "aw9523b.h"
+#include "driver/spi_master.h" // 引入SPI主设备驱动程序的头文件
+#include "driver/gpio.h"      // 引入GPIO驱动程序的头文件
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -135,6 +138,8 @@ audio_board_handle_t audio_board_get_handle(void);
  *          others  fail
  */
 esp_err_t audio_board_deinit(audio_board_handle_t audio_board);
+
+esp_err_t audio_board_back_SPI_init(spi_device_handle_t *handle);
 
 #ifdef __cplusplus
 }
