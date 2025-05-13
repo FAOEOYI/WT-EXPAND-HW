@@ -37,7 +37,9 @@ End of Life IDF branches are removed. See [IDF Supported Periods](https://docs.e
 | ESP-ADF <br> Release/v2.7  | ![alt text](docs/_static/yes-checkm.png "supported") | ![alt text](docs/_static/yes-checkm.png "supported") | ![alt text](docs/_static/yes-checkm.png "supported") | ![alt text](docs/_static/yes-checkm.png "supported") | ![alt text](docs/_static/no-icon.png "not supported") |
 | ESP-ADF <br> Release/v2.6  | ![alt text](docs/_static/yes-checkm.png "supported")| ![alt text](docs/_static/yes-checkm.png "supported") |![alt text](docs/_static/no-icon.png "not supported") | ![alt text](docs/_static/no-icon.png "not supported") | ![alt text](docs/_static/no-icon.png "not supported") |
 
+### Environmental Construction Guide
 
+ [WT-EXPAND-HW环境搭建指南.pdf](https://github.com/FAOEOYI/WT-EXPAND-HW/blob/main/WT-EXPAND-HW环境搭建指南.pdf) 
 
 ### Quick Start
 
