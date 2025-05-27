@@ -241,6 +241,8 @@ static uint8_t ft5x06_read_fw_ver(void)
 
 esp_err_t ft5x06_init(void)
 {
+    esp_err_t ret = ESP_OK;
+    #ifdef CONFIG_AUDIO_BOARD_AD35_S3
     touch_panel_config_t touch_cfg = {
          .interface_i2c = {
             .i2c_addr = 0x38,
@@ -276,7 +278,7 @@ esp_err_t ft5x06_init(void)
     g_dev.height = touch_cfg.height;
     ft5x06_set_direction(touch_cfg.direction);
 
-    esp_err_t ret = ESP_OK;
+    // esp_err_t ret = ESP_OK;
     // ft5x06_dev_t *dev = &g_dev;
     ESP_LOGI(TAG, "FT5x06 frameware version [%x]", ft5x06_read_fw_ver());
     ESP_LOGI(TAG, "Touch panel size width: %d, height: %d", g_dev.width, g_dev.height);
@@ -311,6 +313,7 @@ esp_err_t ft5x06_init(void)
 
     ESP_LOGI(TAG, "Initial successful | GPIO INT:%d | ADDR:0x%x | dir:%d",
              touch_cfg.pin_num_int, touch_cfg.interface_i2c.i2c_addr, touch_cfg.direction);
+    #endif
     return ret;
 }
 
